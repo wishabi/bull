@@ -918,3 +918,4 @@ declare namespace Bull {
 }
 
 export = Bull;
+declare module 'bull';
