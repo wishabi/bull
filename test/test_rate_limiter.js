@@ -86,43 +86,7 @@ describe('Rate limiter', () => {
     });
   });
 
-  it('should put a job into the delayed queue when limit is hit', () => {
-    const newQueue = utils.buildQueue('test rate limiter', {
-      limiter: {
-        max: 1,
-        duration: 1000
-      }
-    });
-
-    queue.on('failed', e => {
-      assert.fail(e);
-    });
-
-    return Promise.all([
-      newQueue.add({}),
-      newQueue.add({}),
-      newQueue.add({}),
-      newQueue.add({})
-    ]).then(() => {
-      Promise.all([
-        newQueue.getNextJob({}),
-        newQueue.getNextJob({}),
-        newQueue.getNextJob({}),
-        newQueue.getNextJob({})
-      ]).then(() => {
-        return queue.getDelayedCount().then(
-          delayedCount => {
-            expect(delayedCount).to.eq(3);
-          },
-          () => {
-            /*ignore error*/
-          }
-        );
-      });
-    });
-  });
-
-  it('should not put a job into the delayed queue when discard is true', () => {
+  it('should put rate limited jobs into waiting when bounceBack is true', async () => {
     const newQueue = utils.buildQueue('test rate limiter', {
       limiter: {
         max: 1,
@@ -134,29 +98,72 @@ describe('Rate limiter', () => {
     newQueue.on('failed', e => {
       assert.fail(e);
     });
-    return Promise.all([
+
+    await Promise.all([
       newQueue.add({}),
       newQueue.add({}),
       newQueue.add({}),
       newQueue.add({})
-    ]).then(() => {
-      Promise.all([
-        newQueue.getNextJob({}),
-        newQueue.getNextJob({}),
-        newQueue.getNextJob({}),
-        newQueue.getNextJob({})
-      ]).then(() => {
-        return newQueue.getDelayedCount().then(delayedCount => {
-          expect(delayedCount).to.eq(0);
-          return newQueue.getWaitingCount().then(waitingCount => {
-            expect(waitingCount).to.eq(3);
-            return newQueue.getActiveCount().then(waitingCount => {
-              expect(waitingCount).to.eq(1);
-            });
-          });
-        });
-      });
+    ]);
+
+    await Promise.all([
+      newQueue.getNextJob({}),
+      newQueue.getNextJob({}),
+      newQueue.getNextJob({}),
+      newQueue.getNextJob({})
+    ]);
+
+    const completedCount = await newQueue.getCompletedCount();
+    const failedCount = await newQueue.getFailedCount();
+    const delayedCount = await newQueue.getDelayedCount();
+    const activeCount = await newQueue.getActiveCount();
+    const waitingCount = await newQueue.getWaitingCount();
+
+    expect(completedCount).to.eq(0);
+    expect(failedCount).to.eq(0);
+    expect(delayedCount).to.eq(0);
+    expect(activeCount).to.eq(1);
+    expect(waitingCount).to.eq(3);
+  });
+
+  it('should put rate limited jobs into delayed when bounceBack is false', async () => {
+    const newQueue = utils.buildQueue('test rate limiter', {
+      limiter: {
+        max: 1,
+        duration: 1000,
+        bounceBack: false
+      }
     });
+
+    newQueue.on('failed', e => {
+      assert.fail(e);
+    });
+
+    await Promise.all([
+      newQueue.add({}),
+      newQueue.add({}),
+      newQueue.add({}),
+      newQueue.add({})
+    ]);
+
+    await Promise.all([
+      newQueue.getNextJob({}),
+      newQueue.getNextJob({}),
+      newQueue.getNextJob({}),
+      newQueue.getNextJob({})
+    ]);
+
+    const completedCount = await newQueue.getCompletedCount();
+    const failedCount = await newQueue.getFailedCount();
+    const delayedCount = await newQueue.getDelayedCount();
+    const activeCount = await newQueue.getActiveCount();
+    const waitingCount = await newQueue.getWaitingCount();
+
+    expect(completedCount).to.eq(0);
+    expect(failedCount).to.eq(0);
+    expect(delayedCount).to.eq(3);
+    expect(activeCount).to.eq(1);
+    expect(waitingCount).to.eq(0);
   });
 
   it('should rate limit by grouping', async function() {
