@@ -1,8 +1,165 @@
 # Changelog
 
+## v.3.16.0
+
+- feat(rate-limiter): add grouping support.
+
+[Changes](https://github.com/OptimalBits/bull/compare/v3.15.0...v3.16.0)
+
+## v.3.15.0
+
+- feat: add isPaused fixes #1274
+- fix: emit waiting event when adding a priority job (#1134)
+
+[Changes](https://github.com/OptimalBits/bull/compare/v3.14.0...v3.15.0)
+
+## v.3.14.0
+
+- feat(queue): add removeJobs function
+- fix: clamp negative job delay values to 0 to prevent thrashing
+- fix: use DEFAULT_JOB_NAME (#1585)
+- fix: remove the lazy client error handler on close (#1605)
+- fix: prevent exceeding the maximum stack call size when emptying large queues (#1660)
+
+[Changes](https://github.com/OptimalBits/bull/compare/v3.13.0...v3.14.0)
+
+## v.3.13.0
+
+- feat: add "preventParsingData" job option to prevent data parsing
+- fix: queue.clean clean job logs as well
+- fix: whenCurrentJobsFinished should wait for all jobs
+
+[Changes](https://github.com/OptimalBits/bull/compare/v3.12.1...v3.13.0)
+
+## v.3.12.1
+
+- fix: catch errors parsing invalid progress data
+- fix(pause): don't initialize bclient if not waiting for jobs to finish
+
+[Changes](https://github.com/OptimalBits/bull/compare/v3.12.0...v3.12.1)
+
+## v.3.12.0
+
+- feat: support async custom backoffs.
+- feat(sandbox): emulate job.progress function.
+
+- fix: queue.pause(true, true) doesn't pause queue.
+
+[Changes](https://github.com/OptimalBits/bull/compare/v3.11.0...v3.12.0)
+
+## v.3.11.0
+
+- feat(queue): basic support for bulk adding jobs.
+- feat(job): save data on job instance when updated.
+
+- fix(queue): whenCurrentJobsFinished shouldn't initialize bclient. Fixes #1346.
+- fix(queue): unhandled promise warning in updateDelayTimer.
+- fix(sandbox): if the child process is killed, remove it from the pool.
+
+[Changes](https://github.com/OptimalBits/bull/compare/v3.10.0...v3.11.0)
+
+## v.3.10.0
+
+- fix: remove logs automtically when using autoremove fixes #1330
+- feat: add support for keeping a specified number of jobs when using auto-remove.
+- feat: add support for node 12
+- fix: fix check for supported file types in sandboxed processors #1311
+- ci: drop support for node 6
+
+[Changes](https://github.com/OptimalBits/bull/compare/v3.9.1...v3.10.0)
+
+## v.3.9.1
+
+- fix: add log to job wrapper
+
+[Changes](https://github.com/OptimalBits/bull/compare/v3.9.0...v3.9.1)
+
+## v.3.9.0
+
+- feat: add job.log #1165
+
+[Changes](https://github.com/OptimalBits/bull/compare/v3.8.1...v3.9.0)
+
+## v.3.8.1
+
+- fix: wait for ready in cleanJobsInSet fixes #1298
+
+[Changes](https://github.com/OptimalBits/bull/compare/v3.8.0...v3.8.1)
+
+## v.3.8.0
+
+- fix: improve delay logic fixing #1226, #1222
+- feat: store finishedOn on the job instance
+- fix: return every in getRepeatableJobs #1284
+- fix: remove broken child processes #1098
+- feat: update sandbox exit handler to log signals #1252
+- fix: Ignore unknown command client error #1240
+
+[Changes](https://github.com/OptimalBits/bull/compare/v3.7.0...v3.8.0)
+
+## v.3.7.0
+
+- perf: improve update delay set logic.
+- feat: consider priority when promoting a job #1205.
+- fix: better delay for rate limited jobs.
+- feat: update port selection mechanism for child node process inspect flag.
+
+[Changes](https://github.com/OptimalBits/bull/compare/v3.6.0...v3.7.0)
+
+## v.3.6.0
+
+- feat: add function to remove repeatable jobs by key.
+- fix: properly remove sandbox events. Fixes #1179.
+- fix: make progress functions in sandbox consistently return a promise.
+
+[Changes](https://github.com/OptimalBits/bull/compare/v3.5.3...v3.6.0)
+
+## v.3.5.3
+
+- chore: upgrade ioredis to ^4.5.1.
+- fix: fix #1044 support for typescript processors.
+- chore: remove bluebird.
+- chore: use lockKey method instead of private property.
+- fix(queue): convert delay setting to number.
+
+[Changes](https://github.com/OptimalBits/bull/compare/v3.5.2...v3.5.3)
+
+## v.3.5.2
+
+- chore(queue): remove bluebird config from the codebase.
+
+[Changes](https://github.com/OptimalBits/bull/compare/v3.5.1...v3.5.2)
+
+## v.3.5.1
+
+- chore(yarn): updated yarn.lock
+
+[Changes](https://github.com/OptimalBits/bull/compare/v3.5.0...v3.5.1)
+
 ## v.3.5.0
 
+Flipp Changes:
 - new config in ratelimiter to do nothing when a queue hits the limit
+
+OptimalBits changes:
+- fix(delayed): pause delayed jobs #1087
+- fix(lua): correct numJobs fetch in moveToActive
+- perf(moveToActive): used local var for rate limiter
+- perf(queue): replace bluebird by native promises where possible
+- chore(queue): fix typo in forcedReconnection variable
+- feat(child-processes): catch sub process crashes
+- fix(jobs): reset 'failedReason', 'finishedOn' and 'processedOn' fields on job retry
+- fix(queue): fix Warning: cancellation is disabled
+- fix(queue): remove the correct listener in isRedisReady
+- feat(jobs): allow cancelling of retries when using custom backoff strategy
+- feat(rate-limiter): add discard config for rate-limiter
+- feat(jobs): make job progress accepts variant types
+- fix(repeatable): Fixed wrong repeatable count updates
+- fix(jobs): fix copy paste mistake for stacktrace in job toData
+- feat(child-processes): Propagate stack traces
+- feat(repeatable): add ability for cron repeatable job with startDate
+
+[Changes](https://github.com/OptimalBits/bull/compare/v3.4.8...v3.5.0)
 
 ## v.3.4.8
 

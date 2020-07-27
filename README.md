@@ -47,27 +47,19 @@
   </p>
 </div>
 
+---
+
+### BullMQ 4 Beta
+
+If you want to start using the next major version of Bull you are welcome to the new repo [here](https://github.com/taskforcesh/bullmq)
 
 ---
 
 ### Sponsors
 
-Please visit our sponsors!:
+If you find Bull valuable, please consider sponsoring its development by using the Taskforce front-end &nbsp; [<img src="http://taskforce.sh/assets/logo_square.png" width="100" alt="Taskforce.sh, Inc" style="padding: 100px"/>](https://taskforce.sh). 
 
-<div style="display:flex; align-items: center;" valign="middle">
-  <a href="https://getstream.io/winds?utm_source=bull&utm_medium=banner&utm_campaign=github" >
-    <img src="https://getstream.imgix.net/images/winds/winds-word-logo.svg" alt="Winds" width="200" style="padding: 10px"/>
-  </a>
-  <a href="http://mixmax.com">
-    <img src="https://mixmax.com/images/logo_confirmation.png" alt="Mixmax, Inc" width="75" style="padding: 10px"/>
-  </a>
-  <a href="http://taskforce.sh"  style="margin-left: 50px;">
-    <img src="http://taskforce.sh/assets/logo_square.png" width="160" alt="Taskforce.sh, Inc" style="padding: 10px"/>
-  </a>
-</div>
-
-Do you want to sponsor bull development? Please, let us know!
-
+Besides helping Bull's development, you will also benefit from a constantly-improving UI for managing all of your queues and jobs.
 
 ---
 
@@ -99,8 +91,9 @@ There are a few third-party UIs that you can use for monitoring:
 
 **Bull v3**
 
-- [NEW (Preview) Taskforce](https://taskforce.sh)
-- [Arena](https://github.com/mixmaxhq/arena)
+- [Taskforce](https://taskforce.sh)
+- [bull-board](https://github.com/vcapretz/bull-board)
+- [bull-repl](https://github.com/darky/bull-repl)
 
 **Bull <= v2**
 
@@ -110,10 +103,15 @@ There are a few third-party UIs that you can use for monitoring:
 
 ---
 
+### Monitoring & Alerting
+
+- With Prometheus [Bull Queue Exporter](https://github.com/UpHabit/bull_exporter)
+
+---
+
 ### Feature Comparison
 
-Since there are a few job queue solutions, here a table comparing them to help you use the one that
-better suits your needs.
+Since there are a few job queue solutions, here is a table comparing them:
 
 | Feature         | Bull          | Kue   | Bee | Agenda |
 | :-------------  |:-------------:|:-----:|:---:|:------:|
@@ -156,6 +154,14 @@ yarn add --dev @types/bull
 ```
 
 Definitions are currently maintained in the [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/bull) repo.
+
+
+## Contributing
+
+We welcome all types of contributions, either code fixes, new features or doc improvements.
+Code formatting is enforced by [prettier](https://prettier.io/)
+For commits please follow conventional [commits convention](https://www.conventionalcommits.org/en/v1.0.0-beta.2/)
+All code must pass lint rules and test suites before it can be merged into develop.
 
 ---
 
@@ -302,7 +308,7 @@ A job can be added to a queue and processed repeatedly according to a cron speci
 
 ```
 
-As a tip, check your expressions here to verify they are as you expect them:
+As a tip, check your expressions here to verify they are correct:
 [cron expression descriptor](http://cronexpressiondescriptor.azurewebsites.net/)
 
 #### Pause / Resume
@@ -321,7 +327,7 @@ queue.resume().then(function(){
 
 #### Events
 
-A queue emits also some useful events, for example...
+A queue emits some useful events, for example...
 ```js
 .on('completed', function(job, result){
   // Job completed with output result!
@@ -330,7 +336,7 @@ A queue emits also some useful events, for example...
 
 For more information on events, including the full list of events that are fired, check out the [Events reference](./REFERENCE.md#events)
 
-#### Queues performace
+#### Queues performance
 
 Queues are cheap, so if you need many of them just create new ones with different
 names:
@@ -389,7 +395,7 @@ if(cluster.isMaster){
 
 For the full documentation, check out the reference and common patterns:
 
-- [Guide](https://optimalbits.github.io/bull/) — Your startpoint for developing with Bull.
+- [Guide](https://optimalbits.github.io/bull/) — Your starting point for developing with Bull.
 - [Reference](./REFERENCE.md) — Reference document with all objects and methods available.
 - [Patterns](./PATTERNS.md) — a set of examples for common patterns.
 - [License](./LICENSE.md) — the Bull license—it's MIT.
@@ -402,7 +408,7 @@ If you see anything that could use more docs, please submit a pull request!
 
 ### Important Notes
 
-The queue aims for "at least once" working strategy. It means that in some situations a job
+The queue aims for an "at least once" working strategy. This means that in some situations, a job
 could be processed more than once. This mostly happens when a worker fails to keep a lock
 for a given job during the total duration of the processing.
 
@@ -413,8 +419,8 @@ and being restarted as a result. Locking is implemented internally by creating a
 `lockRenewTime` (which is usually half `lockDuration`). If `lockDuration` elapses before the lock can be renewed,
 the job will be considered stalled and is automatically restarted; it will be __double processed__. This can happen when:
 1. The Node process running your job processor unexpectedly terminates.
-2. Your job processor was too CPU-intensive and stalled the Node event loop, and as a result, Bull couldn't renew the job lock (see #488 for how we might better detect this). You can fix this by breaking your job processor into smaller parts so that no single part can block the Node event loop. Alternatively, you can pass a larger value for the `lockDuration` setting (with the tradeoff being that it will take longer to recognize a real stalled job).
+2. Your job processor was too CPU-intensive and stalled the Node event loop, and as a result, Bull couldn't renew the job lock (see [#488](https://github.com/OptimalBits/bull/issues/488) for how we might better detect this). You can fix this by breaking your job processor into smaller parts so that no single part can block the Node event loop. Alternatively, you can pass a larger value for the `lockDuration` setting (with the tradeoff being that it will take longer to recognize a real stalled job).
 
 As such, you should always listen for the `stalled` event and log this to your error monitoring system, as this means your jobs are likely getting double-processed.
 
-As a safeguard so problematic jobs won't get restarted indefinitely (e.g. if the job processor aways crashes its Node process), jobs will be recovered from a stalled state a maximum of `maxStalledCount` times (default: `1`).
+As a safeguard so problematic jobs won't get restarted indefinitely (e.g. if the job processor always crashes its Node process), jobs will be recovered from a stalled state a maximum of `maxStalledCount` times (default: `1`).
